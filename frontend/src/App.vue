@@ -12,7 +12,7 @@ export default {
     }
   },
   mounted() {
-    fetch('http://localhost:5000/api/hello')
+    fetch('http://16.16.27.85:5000/api/hello')
       .then(res => res.json())
       .then(data => {
         this.message = data.message
