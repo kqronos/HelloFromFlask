@@ -1,7 +1,11 @@
-# backend/Dockerfile
-FROM python:3.11-slim
+# frontend/Dockerfile
+FROM node:20-alpine as build
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY package*.json ./
+RUN npm install
 COPY . .
-CMD ["python", "app.py"]
+RUN npm run test   # <-- Add this line to run tests during build
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html

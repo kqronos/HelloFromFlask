@@ -22,10 +22,11 @@ jobs:
           docker compose build backend
           docker compose run --rm backend python -m unittest
 
-      - name: Build and run frontend tests
+      - name: Run frontend tests
+        working-directory: ./frontend
         run: |
-          docker compose build frontend
-          docker compose run --rm frontend npm run test
+          npm install
+          npm run test
 
       - name: Build all services
         run: |
