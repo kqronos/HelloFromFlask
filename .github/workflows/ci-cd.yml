@@ -7,13 +7,8 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  build-test-deploy:
     runs-on: ubuntu-latest
-
-    services:
-      docker:
-        image: docker:24.0.7
-        options: --privileged
 
     steps:
       - name: Checkout code
@@ -22,7 +17,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and run backend tests
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Build and test backend
         run: |
           docker-compose build backend
           docker-compose run --rm backend python -m unittest
