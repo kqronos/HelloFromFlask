@@ -1,0 +1,53 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: docker:24.0.7
+        options: --privileged
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and run backend tests
+        run: |
+          docker-compose build backend
+          docker-compose run --rm backend python -m unittest
+
+      - name: Build and run frontend tests
+        run: |
+          docker-compose build frontend
+          docker-compose run --rm frontend npm run test
+
+      - name: Build all services
+        run: |
+          docker-compose build
+
+      # Optional: Push images to Docker Hub or GHCR here
+
+      - name: Deploy to AWS EC2
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.REMOTE_SSH_KEY }}
+          script: |
+            cd HelloFromFlask
+            git pull origin main
+            docker-compose down
+            docker-compose build
+            docker-compose up -d

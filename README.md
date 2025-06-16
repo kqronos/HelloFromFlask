@@ -134,3 +134,5 @@ None for now. ;)
 # Future Improvments
 
 It will be added styles and interactivity while the focus will be kept to monitor and update services along the way.
+
+#Deployed on EC2 AWS
